@@ -3,13 +3,13 @@
 require_relative "lib/botrytis/version"
 
 Gem::Specification.new do |spec|
-  spec.name = "Botrytis BDD"
+  spec.name = "Botrytis"
   spec.version = Botrytis::VERSION
   spec.authors = ["Scott Werner"]
   spec.email = ["scott@sublayer.com"]
 
   spec.summary = "LLM-powered fuzzy matching for your cucumber steps"
-  spec.description = "Botrytis provides semantic matching for Cucumber step definitions using LLMs"
+  spec.description = "Botrytis BDD provides semantic matching for Cucumber step definitions using LLMs"
   spec.homepage = "https://github.com/sublayerapp/botrytis"
   spec.required_ruby_version = ">= 3.1.0"
 
