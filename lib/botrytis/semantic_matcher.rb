@@ -138,16 +138,16 @@ module Botrytis
         if step_definition.respond_to?(:arguments_from)
           # This is the normal way Cucumber creates step matches
           step_arguments = step_definition.arguments_from(constructed_step_text)
-          return Cucumber::StepMatch.new(step_definition, step_text, step_arguments)
+          return SemanticStepMatch.new(step_definition, step_text, step_arguments)
         else
           # Fallback to manual creation
           step_arguments = create_original_step_arguments(step_definition, parameter_values)
-          return Cucumber::StepMatch.new(step_definition, step_text, step_arguments)
+          return SemanticStepMatch.new(step_definition, step_text, step_arguments)
         end
       rescue => e
         # Error in create_match_result, falling back
         # Fallback to simple creation with empty arguments
-        return Cucumber::StepMatch.new(step_definition, step_text, [])
+        return SemanticStepMatch.new(step_definition, step_text, [])
       end
     end
 
@@ -254,6 +254,19 @@ module Botrytis
       # Clean up the pattern to make it a valid step text
       pattern = pattern.gsub(/[\^$]/, '') # Remove anchors
       pattern
+    end
+
+    # Custom StepMatch class for semantic matches that avoids display corruption
+    # The core issue is that Cucumber tries to highlight parameters in step text 
+    # based on parameter positions from the constructed text, but the positions
+    # don't align with the original step text, causing garbled display.
+    class SemanticStepMatch < Cucumber::StepMatch
+      def replace_arguments(step_name, format, colour)
+        # For semantic matches, don't try to replace/highlight arguments
+        # Just return the original step name to avoid garbled text from
+        # parameter position mismatches
+        step_name
+      end
     end
 
   end
