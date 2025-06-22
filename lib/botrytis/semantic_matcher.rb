@@ -141,7 +141,7 @@ module Botrytis
           return Cucumber::StepMatch.new(step_definition, step_text, step_arguments)
         else
           # Fallback to manual creation
-          step_arguments = create_step_arguments(step_definition, parameter_values)
+          step_arguments = create_original_step_arguments(step_definition, parameter_values)
           return Cucumber::StepMatch.new(step_definition, step_text, step_arguments)
         end
       rescue => e
@@ -149,6 +149,13 @@ module Botrytis
         # Fallback to simple creation with empty arguments
         return Cucumber::StepMatch.new(step_definition, step_text, [])
       end
+    end
+
+    def create_proper_step_arguments(step_definition, step_text, parameter_values)
+      # Create step arguments that don't interfere with display formatting
+      # For semantic matching, we just need the parameter values to be passed to the step
+      # We don't need complex MatchData objects since Cucumber will handle display
+      return parameter_values || []
     end
 
     def construct_matching_step_text_for_step_def(step_definition, parameter_values)
@@ -177,59 +184,59 @@ module Botrytis
         return parameter_values.join(' ')
       end
 
-      # Replace capture groups with actual parameter values
+      # Better approach: build step text by understanding the regex structure
       pattern = regex.source
-      parameter_values.each do |value|
-        # Replace the first capture group with the actual value
-        pattern = pattern.sub(/\([^)]+\)/, value)
+      
+      # For simple cases like they click the "([^"]*)" button
+      # We want to replace ([^"]*) with the actual parameter value
+      if pattern.include?('"([^"]*)"') && parameter_values.length == 1
+        # Handle quoted parameter patterns specifically
+        result = pattern.gsub(/\([^)]+\)/, parameter_values[0])
+      else
+        # Fallback to general replacement
+        parameter_values.each do |value|
+          pattern = pattern.sub(/\([^)]+\)/, value)
+        end
+        result = pattern
       end
 
-      # Clean up anchors
-      pattern.gsub(/[\^$]/, '')
+      # Clean up anchors and regex chars
+      result.gsub(/[\^$]/, '').gsub(/^\//, '').gsub(/\/$/, '')
     end
 
-    def create_step_arguments(step_definition, parameter_values)
-      # If no parameters, return empty arguments
+    def create_original_step_arguments(step_definition, parameter_values)
+      # For semantic matching, create simple argument objects that work with Cucumber
+      # This avoids the complex text construction that causes display issues
       return [] if parameter_values.nil? || parameter_values.empty?
+      
+      # Create simple argument objects that just hold the parameter values
+      # without trying to map them to text positions
+      parameter_values.map do |value|
+        # Create a minimal object that responds to the methods Cucumber expects
+        StepArgument.new(value)
+      end
+    end
 
-      # For semantic matching, we need to create step arguments that Cucumber can understand
-      # The issue is that Cucumber expects MatchData-like objects, but we have strings
-      # Let's try to create a proper match by actually running the target step definition
-      # against a constructed step text that would match and produce the right parameters
+    # Minimal step argument class for semantic matching
+    class StepArgument
+      def initialize(value)
+        @value = value
+      end
 
-      # Get the original step definition's regex pattern
-      begin
-        # Extract the regex from the step definition
-        if step_definition.respond_to?(:expression) && step_definition.expression.is_a?(Regexp)
-          regex = step_definition.expression
-        elsif step_definition.respond_to?(:regexp_source)
-          # Parse the regexp_source string back into a Regexp
-          source = step_definition.regexp_source.to_s
-          # Remove the leading /^ and trailing $/ if present
-          source = source.gsub(/^\/\^/, '').gsub(/\$\/$/, '')
-          regex = Regexp.new("^#{source}$")
-        else
-          # Fallback - just return the parameter values as-is
-          return parameter_values
-        end
+      def group(index = 0)
+        index == 0 ? @value : nil
+      end
 
-        # Try to construct a step text that would match the regex and produce our desired parameters
-        constructed_step_text = construct_matching_step_text(regex, parameter_values)
+      def to_s
+        @value.to_s
+      end
 
-        # Now match this constructed text against the regex to get proper MatchData
-        match_data = regex.match(constructed_step_text)
+      def value
+        @value
+      end
 
-        if match_data
-          # Extract the captured groups (skip the full match at index 0)
-          return match_data.captures
-        else
-          # Fallback to original parameter values
-          return parameter_values
-        end
-
-      rescue => e
-        # If anything goes wrong, fallback to original parameter values
-        return parameter_values
+      def captures
+        [@value]
       end
     end
 
@@ -248,5 +255,6 @@ module Botrytis
       pattern = pattern.gsub(/[\^$]/, '') # Remove anchors
       pattern
     end
+
   end
 end
