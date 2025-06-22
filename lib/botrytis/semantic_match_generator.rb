@@ -6,6 +6,7 @@ module Botrytis
       name: "step_match_result",
       description: "Results of semantic matching for a cucumber step",
       attributes: [
+        { name: "step_text_analysis", description: "Analysis of the step text, including semantic meaning and intent" },
         { name: "match_found", description: "Indicates if a match was found, either the string yes or no" },
         { name: "best_match_pattern", description: "The pattern that best matches semantically" },
         { name: "confidence", description: "Confidence score of the match (0.0 - 1.0)" },

@@ -2,7 +2,14 @@
   "permissions": {
     "allow": [
       "Bash(bundle exec rake:*)",
-      "Bash(bundle exec rspec:*)"
+      "Bash(bundle exec rspec:*)",
+      "Bash(bundle exec irb:*)",
+      "Bash(bundle exec cucumber:*)",
+      "Bash(bundle exec ruby:*)",
+      "Bash(mkdir:*)",
+      "Bash(cp:*)",
+      "Bash(touch:*)",
+      "Bash(BOTRYTIS_LIVE_API=true bundle exec cucumber --name \"Authentication variations\")"
     ],
     "deny": []
   }
