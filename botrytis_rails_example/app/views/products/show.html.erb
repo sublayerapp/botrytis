@@ -1,0 +1,10 @@
+<h1><%= @product.name %></h1>
+<p><%= @product.description %></p>
+<p><strong>Price: $<%= @product.price %></strong></p>
+
+<%= form_with url: cart_items_path, local: true do |form| %>
+  <%= form.hidden_field :product_id, value: @product.id %>
+  <%= form.submit "Add to Cart", class: "btn btn-primary" %>
+<% end %>
+
+<%= link_to "Back to Products", products_path %>

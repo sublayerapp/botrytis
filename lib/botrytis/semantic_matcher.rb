@@ -256,18 +256,6 @@ module Botrytis
       pattern
     end
 
-    # Custom StepMatch class for semantic matches that avoids display corruption
-    # The core issue is that Cucumber tries to highlight parameters in step text 
-    # based on parameter positions from the constructed text, but the positions
-    # don't align with the original step text, causing garbled display.
-    class SemanticStepMatch < Cucumber::StepMatch
-      def replace_arguments(step_name, format, colour)
-        # For semantic matches, don't try to replace/highlight arguments
-        # Just return the original step name to avoid garbled text from
-        # parameter position mismatches
-        step_name
-      end
-    end
 
   end
 end

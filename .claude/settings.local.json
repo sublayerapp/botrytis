@@ -9,7 +9,10 @@
       "Bash(mkdir:*)",
       "Bash(cp:*)",
       "Bash(touch:*)",
-      "Bash(BOTRYTIS_LIVE_API=true bundle exec cucumber --name \"Authentication variations\")"
+      "Bash(BOTRYTIS_LIVE_API=true bundle exec cucumber --name \"Authentication variations\")",
+      "Bash(bundle exec rails generate model:*)",
+      "Bash(bundle exec rails generate:*)",
+      "Bash(ls:*)"
     ],
     "deny": []
   }

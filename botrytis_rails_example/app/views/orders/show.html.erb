@@ -1,0 +1,12 @@
+<% if notice %>
+  <p><%= notice %></p>
+<% end %>
+
+<h1>Order Confirmation</h1>
+
+<p>Thank you for your purchase!</p>
+<p>Order #<%= @order.id %></p>
+<p>Total: $<%= @order.total.round(2) %></p>
+<p>Status: <%= @order.status.capitalize %></p>
+
+<%= link_to "Continue Shopping", products_path, class: "btn btn-primary" %>

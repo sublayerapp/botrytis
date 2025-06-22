@@ -1,0 +1,28 @@
+<% if notice %>
+  <p><%= notice %></p>
+<% end %>
+
+<h1>Shopping Cart</h1>
+
+<% if @cart_items.any? %>
+  <% @cart_items.each do |item| %>
+    <div>
+      <h3><%= item.product.name %></h3>
+      <p>Quantity: <%= item.quantity %></p>
+      <p>Price: $<%= item.product.price %></p>
+      <p>Subtotal: $<%= (item.quantity * item.product.price).round(2) %></p>
+      <%= link_to "Remove", cart_item_path(item), method: :delete %>
+    </div>
+    <hr>
+  <% end %>
+  
+  <p><strong>Total: $<%= @cart_items.sum { |item| item.quantity * item.product.price }.round(2) %></strong></p>
+  
+  <%= form_with url: checkout_path, local: true do |form| %>
+    <%= form.submit "Checkout", class: "btn btn-success" %>
+  <% end %>
+<% else %>
+  <p>Your cart is empty</p>
+<% end %>
+
+<%= link_to "Continue Shopping", products_path %>

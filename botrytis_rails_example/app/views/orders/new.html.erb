@@ -1,0 +1,16 @@
+<h1>Checkout</h1>
+
+<h2>Order Summary</h2>
+<% @cart_items.each do |item| %>
+  <div>
+    <p><%= item.product.name %> x <%= item.quantity %> = $<%= (item.quantity * item.product.price).round(2) %></p>
+  </div>
+<% end %>
+
+<p><strong>Total: $<%= @total.round(2) %></strong></p>
+
+<%= form_with url: orders_path, local: true do |form| %>
+  <%= form.submit "Complete Purchase", class: "btn btn-success" %>
+<% end %>
+
+<%= link_to "Back to Cart", cart_path %>

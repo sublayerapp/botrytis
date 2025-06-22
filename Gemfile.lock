@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    botrytis (0.1.0)
+    botrytis (1.0.0)
       cucumber (>= 9)
       sublayer (>= 0.2.8)
 
